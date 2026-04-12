@@ -120,7 +120,7 @@ export default function GameDetailsModal({ isOpen, game, onClose, onEdit }: Game
           <div className="p-6 flex flex-col gap-6">
             
             {/* Desktop Title Header */}
-            <div className="hidden sm:flex items-start justify-between gap-4">
+            <div className="hidden sm:flex items-start justify-between gap-4 pr-12">
               <h2 className="text-3xl font-bold text-white leading-tight" style={{ fontFamily: 'var(--font-body)' }}>
                 {game.title}
               </h2>
