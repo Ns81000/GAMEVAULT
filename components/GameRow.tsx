@@ -8,22 +8,15 @@ import { Game } from '@/types'
 interface GameRowProps {
   game: Game
   onEdit: (game: Game) => void
+  index: number
 }
 
-export default function GameRow({ game, onEdit }: GameRowProps) {
-  const [copiedType, setCopiedType] = useState<'download' | 'save' | null>(null)
+export default function GameRow({ game, onEdit, index }: GameRowProps) {
   const [imgError, setImgError] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
-  const handleLinkAction = async (url: string, type: 'download' | 'save') => {
+  const handleLinkAction = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer')
-    try {
-      await navigator.clipboard.writeText(url)
-      setCopiedType(type)
-      setTimeout(() => setCopiedType(null), 1500)
-    } catch {
-      // clipboard not available
-    }
   }
 
   const genreDisplay = game.genres?.slice(0, 2).join(', ') || ''
@@ -47,6 +40,19 @@ export default function GameRow({ game, onEdit }: GameRowProps) {
     >
       {/* Top Section: Thumbnail + Info */}
       <div className="flex items-start gap-4 w-full min-w-0">
+        {/* Order Badge */}
+        <div className="flex items-center self-center justify-center flex-shrink-0"
+             style={{
+               color: 'var(--text-secondary)',
+               fontFamily: 'var(--font-mono)',
+               fontSize: '14px',
+               fontWeight: 700,
+               minWidth: '24px',
+               padding: '0 4px',
+             }}>
+          {index}
+        </div>
+
         {/* Thumbnail */}
         <div
           className="relative flex-shrink-0 overflow-hidden"
@@ -94,6 +100,7 @@ export default function GameRow({ game, onEdit }: GameRowProps) {
               fontSize: '18px',
               color: isHovered ? 'var(--link-hover)' : 'var(--text-primary)',
             }}
+            title={game.title}
           >
             {game.title}
           </h3>
@@ -127,10 +134,10 @@ export default function GameRow({ game, onEdit }: GameRowProps) {
       {/* Bottom Section: Actions */}
       <div className="flex flex-wrap items-center gap-2 w-full mt-1">
         <button
-          onClick={() => handleLinkAction(game.download_link, 'download')}
-          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 transition-all duration-180"
+          onClick={() => handleLinkAction(game.download_link)}
+          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 transition-all duration-180 cursor-pointer"
           style={{
-            background: copiedType === 'download' ? 'var(--mint-dark)' : 'var(--mint)',
+            background: 'var(--mint)',
             color: 'var(--text-absolute-black)',
             fontFamily: 'var(--font-mono)',
             fontSize: '10px',
@@ -142,26 +149,17 @@ export default function GameRow({ game, onEdit }: GameRowProps) {
             border: 'none',
           }}
         >
-          {copiedType === 'download' ? (
-            <>
-              <Copy size={11} />
-              COPIED!
-            </>
-          ) : (
-            <>
-              <Download size={11} />
-              DOWNLOAD
-            </>
-          )}
+          <Download size={11} />
+          DOWNLOAD
         </button>
 
         {game.save_link && (
           <button
-            onClick={() => handleLinkAction(game.save_link!, 'save')}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 transition-all duration-180"
+            onClick={() => handleLinkAction(game.save_link!)}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 transition-all duration-180 cursor-pointer"
             style={{
               background: 'transparent',
-              color: copiedType === 'save' ? 'var(--mint)' : 'var(--text-muted)',
+              color: 'var(--text-muted)',
               fontFamily: 'var(--font-mono)',
               fontSize: '10px',
               fontWeight: 700,
@@ -169,26 +167,17 @@ export default function GameRow({ game, onEdit }: GameRowProps) {
               letterSpacing: '1.2px',
               borderRadius: '24px',
               padding: '8px 16px',
-              border: `1px solid ${copiedType === 'save' ? 'var(--mint)' : 'var(--text-secondary)'}`,
+              border: '1px solid var(--text-secondary)',
             }}
           >
-            {copiedType === 'save' ? (
-              <>
-                <Copy size={11} />
-                COPIED!
-              </>
-            ) : (
-              <>
-                <Save size={11} />
-                SAVE
-              </>
-            )}
+            <Save size={11} />
+            SAVE
           </button>
         )}
 
         <button
           onClick={() => onEdit(game)}
-          className="p-2 rounded-full transition-all duration-200"
+          className="p-2 rounded-full transition-all duration-200 cursor-pointer"
           style={{
             opacity: isHovered ? 1 : 0.4,
           }}

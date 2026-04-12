@@ -14,9 +14,9 @@ export default function GameGrid({ games, onEdit }: GameGridProps) {
   return (
     <SortableContext items={games.map(g => g.id)} strategy={rectSortingStrategy}>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5">
-        {games.map((game) => (
+        {games.map((game, index) => (
           <SortableItem key={game.id} id={game.id}>
-            <GameCard game={game} onEdit={onEdit} />
+            <GameCard game={game} onEdit={onEdit} index={index + 1} />
           </SortableItem>
         ))}
       </div>

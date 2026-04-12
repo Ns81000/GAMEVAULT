@@ -8,21 +8,14 @@ import { Game } from '@/types'
 interface GameCardProps {
   game: Game
   onEdit: (game: Game) => void
+  index: number
 }
 
-export default function GameCard({ game, onEdit }: GameCardProps) {
-  const [copiedType, setCopiedType] = useState<'download' | 'save' | null>(null)
+export default function GameCard({ game, onEdit, index }: GameCardProps) {
   const [imgError, setImgError] = useState(false)
 
-  const handleLinkAction = async (url: string, type: 'download' | 'save') => {
+  const handleLinkAction = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer')
-    try {
-      await navigator.clipboard.writeText(url)
-      setCopiedType(type)
-      setTimeout(() => setCopiedType(null), 1500)
-    } catch {
-      // clipboard not available
-    }
   }
 
   const genreDisplay = game.genres?.slice(0, 2).join(', ') || ''
@@ -35,7 +28,7 @@ export default function GameCard({ game, onEdit }: GameCardProps) {
 
   return (
     <div
-      className="relative flex flex-col overflow-hidden transition-all duration-300 group cursor-pointer"
+      className="relative flex flex-col overflow-hidden transition-all duration-300 group"
       style={{
         background: 'var(--canvas)',
         border: '1px solid var(--border-default)',
@@ -43,6 +36,25 @@ export default function GameCard({ game, onEdit }: GameCardProps) {
         aspectRatio: '3/4', 
       }}
     >
+      {/* Order Badge */}
+      <div 
+        className="absolute top-2 left-2 z-10 flex items-center justify-center pointer-events-none"
+        style={{
+          background: 'rgba(0, 0, 0, 0.7)',
+          color: 'var(--text-primary)',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '11px',
+          fontWeight: 700,
+          borderRadius: '12px',
+          minWidth: '22px',
+          height: '22px',
+          padding: '0 6px',
+          border: '1px solid rgba(255, 255, 255, 0.2)'
+        }}
+      >
+        {index}
+      </div>
+
       {/* Cover Image */}
       {game.cover_url && !imgError ? (
         <Image
@@ -77,6 +89,7 @@ export default function GameCard({ game, onEdit }: GameCardProps) {
               color: 'var(--text-secondary)',
               fontWeight: 700,
             }}
+            title={game.title}
           >
             {game.title}
           </span>
@@ -113,6 +126,7 @@ export default function GameCard({ game, onEdit }: GameCardProps) {
               color: '#ffffff',
               textShadow: '0 2px 4px rgba(0,0,0,0.8)',
             }}
+            title={game.title}
           >
             {game.title}
           </h3>
@@ -134,11 +148,11 @@ export default function GameCard({ game, onEdit }: GameCardProps) {
             <button
               onClick={(e) => {
                 e.stopPropagation()
-                handleLinkAction(game.download_link, 'download')
+                handleLinkAction(game.download_link)
               }}
-              className="w-full flex items-center justify-center gap-1.5 transition-all duration-180 hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full flex items-center justify-center gap-1.5 transition-all duration-180 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               style={{
-                background: copiedType === 'download' ? 'var(--mint-dark)' : 'var(--mint)',
+                background: 'var(--mint)',
                 color: 'var(--text-absolute-black)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '10px',
@@ -150,29 +164,20 @@ export default function GameCard({ game, onEdit }: GameCardProps) {
                 border: 'none',
               }}
             >
-              {copiedType === 'download' ? (
-                <>
-                  <Copy size={11} />
-                  COPIED!
-                </>
-              ) : (
-                <>
-                  <Download size={11} />
-                  DOWNLOAD
-                </>
-              )}
+              <Download size={11} />
+              DOWNLOAD
             </button>
 
             {game.save_link && (
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  handleLinkAction(game.save_link!, 'save')
+                  handleLinkAction(game.save_link!)
                 }}
-                className="w-full flex items-center justify-center gap-1.5 transition-all duration-180 hover:bg-white/10 active:scale-[0.98]"
+                className="w-full flex items-center justify-center gap-1.5 transition-all duration-180 hover:bg-white/10 active:scale-[0.98] cursor-pointer"
                 style={{
                   background: 'rgba(0, 0, 0, 0.5)',
-                  color: copiedType === 'save' ? 'var(--mint)' : '#ffffff',
+                  color: '#ffffff',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '10px',
                   fontWeight: 700,
@@ -180,20 +185,11 @@ export default function GameCard({ game, onEdit }: GameCardProps) {
                   letterSpacing: '1.2px',
                   borderRadius: '16px',
                   padding: '8px',
-                  border: `1px solid ${copiedType === 'save' ? 'var(--mint)' : 'rgba(255, 255, 255, 0.2)'}`,
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
                 }}
               >
-                {copiedType === 'save' ? (
-                  <>
-                    <Copy size={11} />
-                    COPIED!
-                  </>
-                ) : (
-                  <>
-                    <Save size={11} />
-                    SAVE
-                  </>
-                )}
+                <Save size={11} />
+                SAVE
               </button>
             )}
           </div>
@@ -204,40 +200,40 @@ export default function GameCard({ game, onEdit }: GameCardProps) {
       <div 
         className="absolute bottom-0 left-0 right-0 p-3 flex flex-col gap-2 lg:hidden bg-gradient-to-t from-black/90 to-transparent"
       >
-          <div className="flex gap-2">
+          <div className="flex gap-2 pointer-events-auto">
             <button
               onClick={(e) => {
                 e.stopPropagation()
-                handleLinkAction(game.download_link, 'download')
+                handleLinkAction(game.download_link)
               }}
-              className="flex-1 flex items-center justify-center transition-all duration-180 active:scale-[0.98]"
+              className="flex-1 flex items-center justify-center transition-all duration-180 active:scale-[0.98] cursor-pointer"
               style={{
-                background: copiedType === 'download' ? 'var(--mint-dark)' : 'var(--mint)',
+                background: 'var(--mint)',
                 color: 'var(--text-absolute-black)',
                 borderRadius: '8px',
                 padding: '10px',
                 border: 'none',
               }}
             >
-              {copiedType === 'download' ? <Copy size={16} /> : <Download size={16} />}
+              <Download size={16} />
             </button>
 
             {game.save_link && (
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  handleLinkAction(game.save_link!, 'save')
+                  handleLinkAction(game.save_link!)
                 }}
-                className="flex-1 flex items-center justify-center transition-all duration-180 active:scale-[0.98]"
+                className="flex-1 flex items-center justify-center transition-all duration-180 active:scale-[0.98] cursor-pointer"
                 style={{
                   background: 'rgba(0, 0, 0, 0.7)',
-                  color: copiedType === 'save' ? 'var(--mint)' : '#ffffff',
+                  color: '#ffffff',
                   borderRadius: '8px',
                   padding: '10px',
-                  border: `1px solid ${copiedType === 'save' ? 'var(--mint)' : 'rgba(255, 255, 255, 0.3)'}`,
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
                 }}
               >
-                {copiedType === 'save' ? <Copy size={16} /> : <Save size={16} />}
+                <Save size={16} />
               </button>
             )}
 
@@ -247,7 +243,7 @@ export default function GameCard({ game, onEdit }: GameCardProps) {
                 e.stopPropagation()
                 onEdit(game)
               }}
-              className="flex-shrink-0 flex items-center justify-center transition-all duration-180 active:scale-[0.98]"
+              className="flex-shrink-0 flex items-center justify-center transition-all duration-180 active:scale-[0.98] cursor-pointer"
               style={{
                 background: 'rgba(0, 0, 0, 0.7)',
                 color: 'var(--mint)',
