@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GameVault
 
-## Getting Started
+A private, high-performance personal game collection manager. Designed securely for a single owner to organize, search, and manage an extensive library of games with a premium, cinematic aesthetic.
 
-First, run the development server:
+## Features
+
+- **Strict Privacy**: Single-password protected instance using Supabase Authentication.
+- **Lightning Search**: Full in-memory metadata search (0ms delay) that parses title, genres, platform, and release year simultaneously.
+- **Responsive Views**: 
+  - **Grid View**: A stunning "pure poster" Steam-style layout with elegant glassmorphism hover overlays.
+  - **List View**: A dense, horizontal Bento-style layout explicitly tailored for reading heavy metadata optimally across all screen sizes.
+- **Drag-and-Drop Sync**: Seamlessly reorder your library visually via touch-friendly `@dnd-kit` physics. Automatically syncs sequence to your database in the background.
+- **Intelligent Loading**: Smart pagination instantly controls DOM bloat, keeping your interface smooth independently of an infinite database.
+
+## Tech Stack
+
+- **Framework:** Next.js 14 (App Router)
+- **Styling:** Tailwind CSS + Custom Design System
+- **Database / Auth:** Supabase
+- **Data Hydration:** IGDB API Integration
+- **Interaction:** Lucide React, dnd-kit
+
+## Vercel Deployment Instructions
+
+This project is 100% pre-configured for instant deployment on Vercel.
+
+1. **Push your code** to any Git repository.
+2. In the Vercel Dashboard, select **Import Project** and point to your repository.
+3. During the setup phase on Vercel, expand the **Environment Variables** section and strictly copy the following exact keys from your local `.env.local`:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+ADMIN_EMAIL=your_admin_email_for_auth
+
+TWITCH_CLIENT_ID=your_twitch_client_id
+TWITCH_CLIENT_SECRET=your_twitch_client_secret
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Click **Deploy**. Vercel will automatically detect Next.js, securely hide your keys, and build the optimized production package beautifully. 
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> **Important**: Ensure you have successfully run the Supabase database migrations (to create the `games` table and `sort_order` column) before your deployed site attempts to interact with it.
