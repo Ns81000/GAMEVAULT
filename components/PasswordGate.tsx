@@ -93,7 +93,7 @@ export default function PasswordGate() {
         </h1>
 
         <p
-          className="mb-10"
+          className="mt-4 mb-10"
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '12px',

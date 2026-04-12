@@ -14,6 +14,7 @@ import EditGameModal from '@/components/EditGameModal'
 import Toast, { useToast } from '@/components/Toast'
 
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
+import { restrictToWindowEdges } from '@dnd-kit/modifiers'
 import { sortableKeyboardCoordinates, arrayMove } from '@dnd-kit/sortable'
 
 export default function Library() {
@@ -430,6 +431,7 @@ export default function Library() {
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
+            modifiers={[restrictToWindowEdges]}
           >
             {viewMode === 'grid' ? (
               <GameGrid games={displayedGames} onEdit={setEditingGame} />

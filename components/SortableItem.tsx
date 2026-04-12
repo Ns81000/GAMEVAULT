@@ -15,7 +15,13 @@ export function SortableItem({ id, children }: { id: string, children: React.Rea
   }
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="touch-none h-full">
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      {...attributes} 
+      {...listeners} 
+      className={`touch-none h-full ${isDragging ? 'cursor-grabbing' : 'cursor-default'}`}
+    >
       {children}
     </div>
   )

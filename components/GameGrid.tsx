@@ -30,20 +30,13 @@ export function GameGridSkeleton() {
       {[...Array(8)].map((_, i) => (
         <div
           key={i}
-          className="flex flex-col overflow-hidden"
+          className="relative overflow-hidden w-full skeleton"
           style={{
-            borderRadius: '20px',
+            borderRadius: '16px',
             border: '1px solid var(--border-surface)',
+            aspectRatio: '3/4',
           }}
-        >
-          <div className="skeleton" style={{ aspectRatio: '3/4', borderRadius: '20px 20px 0 0' }} />
-          <div className="p-4 flex flex-col gap-2">
-            <div className="skeleton" style={{ height: 10, width: '50%', borderRadius: 2 }} />
-            <div className="skeleton" style={{ height: 16, width: '80%', borderRadius: 2 }} />
-            <div className="skeleton" style={{ height: 10, width: '60%', borderRadius: 2 }} />
-            <div className="skeleton mt-2" style={{ height: 32, borderRadius: 24 }} />
-          </div>
-        </div>
+        />
       ))}
     </div>
   )

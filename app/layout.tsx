@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${anton.variable} ${spaceMono.variable} ${dmSans.variable}`}>
-      <body className="bg-canvas text-text-primary font-body min-h-screen">
+      <body className="bg-canvas text-text-primary font-body min-h-screen overflow-x-hidden">
         {children}
       </body>
     </html>
