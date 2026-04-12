@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Download, Save, Pencil, Copy } from 'lucide-react'
+import { Download, Save, Pencil } from 'lucide-react'
 import { Game } from '@/types'
 
 interface GameCardProps {
