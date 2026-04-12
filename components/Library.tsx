@@ -11,6 +11,7 @@ import GameGrid, { GameGridSkeleton } from '@/components/GameGrid'
 import GameList, { GameListSkeleton } from '@/components/GameList'
 import AddGameModal from '@/components/AddGameModal'
 import EditGameModal from '@/components/EditGameModal'
+import GameDetailsModal from '@/components/GameDetailsModal'
 import Toast, { useToast } from '@/components/Toast'
 
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
@@ -26,6 +27,7 @@ export default function Library() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingGame, setEditingGame] = useState<Game | null>(null)
+  const [viewingGame, setViewingGame] = useState<Game | null>(null)
   const [isOnline, setIsOnline] = useState(true)
   
   // Pagination
@@ -435,9 +437,9 @@ export default function Library() {
             modifiers={[restrictToWindowEdges]}
           >
             {viewMode === 'grid' ? (
-              <GameGrid games={displayedGames} onEdit={setEditingGame} />
+              <GameGrid games={displayedGames} onEdit={setEditingGame} onView={setViewingGame} />
             ) : (
-              <GameList games={displayedGames} onEdit={setEditingGame} />
+              <GameList games={displayedGames} onEdit={setEditingGame} onView={setViewingGame} />
             )}
           </DndContext>
         )}
@@ -478,6 +480,13 @@ export default function Library() {
         onClose={() => setEditingGame(null)}
         onSave={handleEditSave}
         onDelete={handleDelete}
+      />
+
+      <GameDetailsModal
+        isOpen={!!viewingGame}
+        game={viewingGame}
+        onClose={() => setViewingGame(null)}
+        onEdit={setEditingGame}
       />
 
       <Toast toasts={toasts} removeToast={removeToast} />

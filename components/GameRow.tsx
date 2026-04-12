@@ -9,9 +9,10 @@ interface GameRowProps {
   game: Game
   onEdit: (game: Game) => void
   index: number
+  onView?: (game: Game) => void
 }
 
-export default function GameRow({ game, onEdit, index }: GameRowProps) {
+export default function GameRow({ game, onEdit, index, onView }: GameRowProps) {
   const [imgError, setImgError] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -29,7 +30,8 @@ export default function GameRow({ game, onEdit, index }: GameRowProps) {
 
   return (
     <div
-      className="flex flex-col gap-4 p-4 transition-all duration-200 group w-full"
+      onClick={() => onView && onView(game)}
+      className="flex flex-col gap-4 p-4 transition-all duration-200 group w-full cursor-pointer"
       style={{
         background: 'var(--canvas)',
         border: '1px solid var(--border-default)',

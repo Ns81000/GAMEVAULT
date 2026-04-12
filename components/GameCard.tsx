@@ -9,9 +9,10 @@ interface GameCardProps {
   game: Game
   onEdit: (game: Game) => void
   index: number
+  onView?: (game: Game) => void
 }
 
-export default function GameCard({ game, onEdit, index }: GameCardProps) {
+export default function GameCard({ game, onEdit, index, onView }: GameCardProps) {
   const [imgError, setImgError] = useState(false)
 
   const handleLinkAction = (url: string) => {
@@ -28,7 +29,8 @@ export default function GameCard({ game, onEdit, index }: GameCardProps) {
 
   return (
     <div
-      className="relative flex flex-col overflow-hidden transition-all duration-300 group"
+      onClick={() => onView && onView(game)}
+      className="relative flex flex-col overflow-hidden transition-all duration-300 group cursor-pointer"
       style={{
         background: 'var(--canvas)',
         border: '1px solid var(--border-default)',
