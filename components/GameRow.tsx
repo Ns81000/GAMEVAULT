@@ -22,7 +22,10 @@ export default function GameRow({ game, onEdit, index, onView, allowView = true 
   }
 
   const handleRowClick = (e: MouseEvent<HTMLDivElement>) => {
+<<<<<<< HEAD
     if (!allowView) return
+=======
+>>>>>>> b88f3c3f761de43190e9e1375971bb4e8179f2ca
     if (e.ctrlKey || e.metaKey) return
 
     const target = e.target as HTMLElement | null
@@ -42,7 +45,11 @@ export default function GameRow({ game, onEdit, index, onView, allowView = true 
   return (
     <div
       onClick={handleRowClick}
+<<<<<<< HEAD
       className={`flex flex-col gap-4 p-4 transition-all duration-200 group w-full ${allowView ? 'cursor-pointer' : 'cursor-default'}`}
+=======
+      className="flex flex-col gap-4 p-4 transition-all duration-200 group w-full cursor-pointer"
+>>>>>>> b88f3c3f761de43190e9e1375971bb4e8179f2ca
       style={{
         background: 'var(--canvas)',
         border: '1px solid var(--border-default)',

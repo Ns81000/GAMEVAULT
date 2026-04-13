@@ -21,7 +21,10 @@ export default function GameCard({ game, onEdit, index, onView, allowView = true
   }
 
   const handleCardClick = (e: MouseEvent<HTMLDivElement>) => {
+<<<<<<< HEAD
     if (!allowView) return
+=======
+>>>>>>> b88f3c3f761de43190e9e1375971bb4e8179f2ca
     if (e.ctrlKey || e.metaKey) return
 
     const target = e.target as HTMLElement | null
@@ -41,7 +44,11 @@ export default function GameCard({ game, onEdit, index, onView, allowView = true
   return (
     <div
       onClick={handleCardClick}
+<<<<<<< HEAD
       className={`relative flex flex-col overflow-hidden transition-all duration-300 group ${allowView ? 'cursor-pointer' : 'cursor-default'}`}
+=======
+      className="relative flex flex-col overflow-hidden transition-all duration-300 group cursor-pointer"
+>>>>>>> b88f3c3f761de43190e9e1375971bb4e8179f2ca
       style={{
         background: 'var(--canvas)',
         border: '1px solid var(--border-default)',
