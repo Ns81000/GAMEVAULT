@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
 import Image from 'next/image'
 import { Download, Save, Pencil } from 'lucide-react'
 import { Game } from '@/types'
@@ -19,6 +19,15 @@ export default function GameCard({ game, onEdit, index, onView }: GameCardProps)
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
+  const handleCardClick = (e: MouseEvent<HTMLDivElement>) => {
+    if (e.ctrlKey || e.metaKey) return
+
+    const target = e.target as HTMLElement | null
+    if (target?.closest('button, a, input, textarea, select, [role="button"]')) return
+
+    onView?.(game)
+  }
+
   const genreDisplay = game.genres?.slice(0, 2).join(', ') || ''
   const ratingDisplay = game.rating ? (game.rating > 10 ? (game.rating / 10).toFixed(1) : game.rating.toFixed(1)) : ''
   const metaParts = [
@@ -29,7 +38,7 @@ export default function GameCard({ game, onEdit, index, onView }: GameCardProps)
 
   return (
     <div
-      onClick={() => onView && onView(game)}
+      onClick={handleCardClick}
       className="relative flex flex-col overflow-hidden transition-all duration-300 group cursor-pointer"
       style={{
         background: 'var(--canvas)',
@@ -108,6 +117,7 @@ export default function GameCard({ game, onEdit, index, onView }: GameCardProps)
       >
         {/* Edit button */}
         <button
+          type="button"
           onClick={() => onEdit(game)}
           className="absolute top-3 right-3 p-2 rounded-full transition-all duration-200 hover:bg-white/20"
           style={{ background: 'rgba(19, 19, 19, 0.8)' }}
@@ -148,6 +158,7 @@ export default function GameCard({ game, onEdit, index, onView }: GameCardProps)
           {/* Buttons */}
           <div className="flex flex-col gap-2 mt-2 pointer-events-auto">
             <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation()
                 handleLinkAction(game.download_link)
@@ -172,6 +183,7 @@ export default function GameCard({ game, onEdit, index, onView }: GameCardProps)
 
             {game.save_link && (
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleLinkAction(game.save_link!)
@@ -204,6 +216,7 @@ export default function GameCard({ game, onEdit, index, onView }: GameCardProps)
       >
           <div className="flex gap-2 pointer-events-auto">
             <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation()
                 handleLinkAction(game.download_link)
@@ -222,6 +235,7 @@ export default function GameCard({ game, onEdit, index, onView }: GameCardProps)
 
             {game.save_link && (
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleLinkAction(game.save_link!)
@@ -241,6 +255,7 @@ export default function GameCard({ game, onEdit, index, onView }: GameCardProps)
 
             {/* Edit Button for Mobile */}
             <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation()
                 onEdit(game)
