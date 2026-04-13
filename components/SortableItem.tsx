@@ -20,7 +20,7 @@ export function SortableItem({ id, children, disabled = false }: { id: string, c
       style={style} 
       {...(!disabled ? attributes : {})} 
       {...(!disabled ? listeners : {})} 
-      className={`touch-none h-full ${disabled ? 'cursor-default' : isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      className={`${disabled ? 'touch-auto cursor-default' : isDragging ? 'touch-none cursor-grabbing' : 'touch-none cursor-grab'} h-full`}
     >
       {children}
     </div>
