@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
 import Image from 'next/image'
 import { Download, Save, Pencil } from 'lucide-react'
 import { Game } from '@/types'
@@ -10,14 +10,25 @@ interface GameRowProps {
   onEdit: (game: Game) => void
   index: number
   onView?: (game: Game) => void
+  allowView?: boolean
 }
 
-export default function GameRow({ game, onEdit, index, onView }: GameRowProps) {
+export default function GameRow({ game, onEdit, index, onView, allowView = true }: GameRowProps) {
   const [imgError, setImgError] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
   const handleLinkAction = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleRowClick = (e: MouseEvent<HTMLDivElement>) => {
+    if (!allowView) return
+    if (e.ctrlKey || e.metaKey) return
+
+    const target = e.target as HTMLElement | null
+    if (target?.closest('button, a, input, textarea, select, [role="button"]')) return
+
+    onView?.(game)
   }
 
   const genreDisplay = game.genres?.slice(0, 2).join(', ') || ''
@@ -30,8 +41,8 @@ export default function GameRow({ game, onEdit, index, onView }: GameRowProps) {
 
   return (
     <div
-      onClick={() => onView && onView(game)}
-      className="flex flex-col gap-4 p-4 transition-all duration-200 group w-full cursor-pointer"
+      onClick={handleRowClick}
+      className={`flex flex-col gap-4 p-4 transition-all duration-200 group w-full ${allowView ? 'cursor-pointer' : 'cursor-default'}`}
       style={{
         background: 'var(--canvas)',
         border: '1px solid var(--border-default)',
@@ -136,7 +147,11 @@ export default function GameRow({ game, onEdit, index, onView }: GameRowProps) {
       {/* Bottom Section: Actions */}
       <div className="flex flex-wrap items-center gap-2 w-full mt-1">
         <button
-          onClick={() => handleLinkAction(game.download_link)}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            handleLinkAction(game.download_link)
+          }}
           className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 transition-all duration-180 cursor-pointer"
           style={{
             background: 'var(--mint)',
@@ -157,7 +172,11 @@ export default function GameRow({ game, onEdit, index, onView }: GameRowProps) {
 
         {game.save_link && (
           <button
-            onClick={() => handleLinkAction(game.save_link!)}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleLinkAction(game.save_link!)
+            }}
             className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 transition-all duration-180 cursor-pointer"
             style={{
               background: 'transparent',
@@ -178,6 +197,7 @@ export default function GameRow({ game, onEdit, index, onView }: GameRowProps) {
         )}
 
         <button
+          type="button"
           onClick={() => onEdit(game)}
           className="p-2 rounded-full transition-all duration-200 cursor-pointer"
           style={{

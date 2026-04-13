@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, LogOut, RefreshCw, WifiOff } from 'lucide-react'
+import { Plus, LogOut, RefreshCw, WifiOff, ArrowUpDown, Lock } from 'lucide-react'
 import { isAuthenticated, clearAuth } from '@/lib/auth'
 import { Game, ViewMode } from '@/types'
 import SearchBar from '@/components/SearchBar'
@@ -29,6 +29,7 @@ export default function Library() {
   const [editingGame, setEditingGame] = useState<Game | null>(null)
   const [viewingGame, setViewingGame] = useState<Game | null>(null)
   const [isOnline, setIsOnline] = useState(true)
+  const [isReorderMode, setIsReorderMode] = useState(false)
   
   // Pagination
   const [visibleCount, setVisibleCount] = useState(20)
@@ -216,6 +217,10 @@ export default function Library() {
     router.replace('/')
   }
 
+  const toggleReorderMode = () => {
+    setIsReorderMode((current) => !current)
+  }
+
   const filteredGames = useMemo(() => {
     if (!searchQuery.trim()) return games
     const q = searchQuery.toLowerCase()
@@ -281,6 +286,28 @@ export default function Library() {
 
             <div className="flex items-center gap-3">
               <ViewToggle viewMode={viewMode} onToggle={handleViewToggle} />
+
+              <button
+                onClick={toggleReorderMode}
+                className="flex items-center gap-1.5 transition-all duration-180"
+                style={{
+                  background: isReorderMode ? 'var(--text-absolute-black)' : 'transparent',
+                  color: isReorderMode ? 'var(--mint)' : 'var(--text-secondary)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1.2px',
+                  borderRadius: '24px',
+                  padding: '8px 14px',
+                  border: `1px solid ${isReorderMode ? 'var(--mint)' : 'var(--border-default)'}`,
+                }}
+                aria-pressed={isReorderMode}
+                title={isReorderMode ? 'Lock card positions' : 'Enable drag mode'}
+              >
+                {isReorderMode ? <Lock size={14} /> : <ArrowUpDown size={14} />}
+                <span className="hidden sm:inline">{isReorderMode ? 'LOCK POSITIONS' : 'DRAG MODE'}</span>
+              </button>
 
               <button
                 onClick={() => setShowAddModal(true)}
@@ -431,15 +458,15 @@ export default function Library() {
 
         {!isLoading && !hasError && filteredGames.length > 0 && (
           <DndContext
-            sensors={sensors}
+            sensors={isReorderMode ? sensors : []}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
             modifiers={[restrictToWindowEdges]}
           >
             {viewMode === 'grid' ? (
-              <GameGrid games={displayedGames} onEdit={setEditingGame} onView={setViewingGame} />
+              <GameGrid games={displayedGames} onEdit={setEditingGame} onView={setViewingGame} isReorderMode={isReorderMode} />
             ) : (
-              <GameList games={displayedGames} onEdit={setEditingGame} onView={setViewingGame} />
+              <GameList games={displayedGames} onEdit={setEditingGame} onView={setViewingGame} isReorderMode={isReorderMode} />
             )}
           </DndContext>
         )}

@@ -9,15 +9,16 @@ interface GameListProps {
   games: Game[]
   onEdit: (game: Game) => void
   onView: (game: Game) => void
+  isReorderMode?: boolean
 }
 
-export default function GameList({ games, onEdit, onView }: GameListProps) {
+export default function GameList({ games, onEdit, onView, isReorderMode = false }: GameListProps) {
   return (
     <SortableContext items={games.map(g => g.id)} strategy={verticalListSortingStrategy}>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
         {games.map((game, index) => (
-          <SortableItem key={game.id} id={game.id}>
-            <GameRow game={game} onEdit={onEdit} index={index + 1} onView={onView} />
+          <SortableItem key={game.id} id={game.id} disabled={!isReorderMode}>
+            <GameRow game={game} onEdit={onEdit} index={index + 1} onView={onView} allowView={!isReorderMode} />
           </SortableItem>
         ))}
       </div>

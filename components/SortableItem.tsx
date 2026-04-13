@@ -3,8 +3,8 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-export function SortableItem({ id, children }: { id: string, children: React.ReactNode }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
+export function SortableItem({ id, children, disabled = false }: { id: string, children: React.ReactNode, disabled?: boolean }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, disabled })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -18,9 +18,9 @@ export function SortableItem({ id, children }: { id: string, children: React.Rea
     <div 
       ref={setNodeRef} 
       style={style} 
-      {...attributes} 
-      {...listeners} 
-      className={`touch-none h-full ${isDragging ? 'cursor-grabbing' : 'cursor-default'}`}
+      {...(!disabled ? attributes : {})} 
+      {...(!disabled ? listeners : {})} 
+      className={`touch-none h-full ${disabled ? 'cursor-default' : isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
     >
       {children}
     </div>
