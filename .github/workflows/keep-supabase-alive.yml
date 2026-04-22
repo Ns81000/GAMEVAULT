@@ -15,7 +15,6 @@ on:
 env:
   SUPA_URL: ${{ secrets.SUPABASE_URL }}
   SUPA_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-  SCHEMA:   "keep_alive"
 
 jobs:
   simulate_user_activity:
@@ -44,10 +43,9 @@ jobs:
         run: |
           echo "Fetching user list..."
           HTTP_CODE=$(curl -s -o /tmp/users.json -w "%{http_code}" \
-            "${SUPA_URL}/rest/v1/users?select=id,username&limit=5" \
+            "${SUPA_URL}/rest/v1/ka_users?select=id,username&limit=5" \
             -H "apikey: ${SUPA_KEY}" \
-            -H "Authorization: Bearer ${SUPA_KEY}" \
-            -H "Accept-Profile: ${SCHEMA}")
+            -H "Authorization: Bearer ${SUPA_KEY}")
 
           echo "HTTP $HTTP_CODE — $(cat /tmp/users.json)"
 
@@ -83,13 +81,11 @@ jobs:
 
           echo "Creating session from $IP"
           HTTP_CODE=$(curl -s -o /tmp/session.json -w "%{http_code}" -X POST \
-            "${SUPA_URL}/rest/v1/sessions" \
+            "${SUPA_URL}/rest/v1/ka_sessions" \
             -H "apikey: ${SUPA_KEY}" \
             -H "Authorization: Bearer ${SUPA_KEY}" \
             -H "Content-Type: application/json" \
             -H "Prefer: return=representation" \
-            -H "Accept-Profile: ${SCHEMA}" \
-            -H "Content-Profile: ${SCHEMA}" \
             -d "{\"user_id\":\"$USER_ID\",\"ip_address\":\"$IP\",\"user_agent\":\"$AGENT\"}")
 
           echo "HTTP $HTTP_CODE — $(cat /tmp/session.json)"
@@ -109,12 +105,10 @@ jobs:
         run: |
           USER_ID="${{ steps.pick_user.outputs.user_id }}"
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-            "${SUPA_URL}/rest/v1/activity_log" \
+            "${SUPA_URL}/rest/v1/ka_activity_log" \
             -H "apikey: ${SUPA_KEY}" \
             -H "Authorization: Bearer ${SUPA_KEY}" \
             -H "Content-Type: application/json" \
-            -H "Accept-Profile: ${SCHEMA}" \
-            -H "Content-Profile: ${SCHEMA}" \
             -d "{\"user_id\":\"$USER_ID\",\"action\":\"login\",\"metadata\":{\"method\":\"password\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"run_id\":\"${{ github.run_id }}\"}}")
 
           echo "Log login HTTP $HTTP_CODE"
@@ -127,26 +121,23 @@ jobs:
 
           echo "Fetching user profile..."
           curl -s -o /dev/null \
-            "${SUPA_URL}/rest/v1/users?id=eq.${USER_ID}&select=*" \
+            "${SUPA_URL}/rest/v1/ka_users?id=eq.${USER_ID}&select=*" \
             -H "apikey: ${SUPA_KEY}" \
-            -H "Authorization: Bearer ${SUPA_KEY}" \
-            -H "Accept-Profile: ${SCHEMA}"
+            -H "Authorization: Bearer ${SUPA_KEY}"
           sleep $((RANDOM % 12 + 3))
 
           echo "Fetching settings..."
           curl -s -o /dev/null \
-            "${SUPA_URL}/rest/v1/settings?user_id=eq.${USER_ID}&select=key,value" \
+            "${SUPA_URL}/rest/v1/ka_settings?user_id=eq.${USER_ID}&select=key,value" \
             -H "apikey: ${SUPA_KEY}" \
-            -H "Authorization: Bearer ${SUPA_KEY}" \
-            -H "Accept-Profile: ${SCHEMA}"
+            -H "Authorization: Bearer ${SUPA_KEY}"
           sleep $((RANDOM % 18 + 5))
 
           echo "Fetching recent activity..."
           curl -s -o /dev/null \
-            "${SUPA_URL}/rest/v1/activity_log?user_id=eq.${USER_ID}&select=action,created_at&order=created_at.desc&limit=10" \
+            "${SUPA_URL}/rest/v1/ka_activity_log?user_id=eq.${USER_ID}&select=action,created_at&order=created_at.desc&limit=10" \
             -H "apikey: ${SUPA_KEY}" \
-            -H "Authorization: Bearer ${SUPA_KEY}" \
-            -H "Accept-Profile: ${SCHEMA}"
+            -H "Authorization: Bearer ${SUPA_KEY}"
 
           echo "Dashboard browse complete"
 
@@ -167,12 +158,10 @@ jobs:
 
           echo "Updating profile..."
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X PATCH \
-            "${SUPA_URL}/rest/v1/users?id=eq.${USER_ID}" \
+            "${SUPA_URL}/rest/v1/ka_users?id=eq.${USER_ID}" \
             -H "apikey: ${SUPA_KEY}" \
             -H "Authorization: Bearer ${SUPA_KEY}" \
             -H "Content-Type: application/json" \
-            -H "Accept-Profile: ${SCHEMA}" \
-            -H "Content-Profile: ${SCHEMA}" \
             -d "{\"bio\":\"$BIO\",\"login_count\":$LOGIN_COUNT,\"updated_at\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}")
 
           echo "Update profile HTTP $HTTP_CODE"
@@ -183,12 +172,10 @@ jobs:
         run: |
           USER_ID="${{ steps.pick_user.outputs.user_id }}"
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-            "${SUPA_URL}/rest/v1/activity_log" \
+            "${SUPA_URL}/rest/v1/ka_activity_log" \
             -H "apikey: ${SUPA_KEY}" \
             -H "Authorization: Bearer ${SUPA_KEY}" \
             -H "Content-Type: application/json" \
-            -H "Accept-Profile: ${SCHEMA}" \
-            -H "Content-Profile: ${SCHEMA}" \
             -d "{\"user_id\":\"$USER_ID\",\"action\":\"update_profile\",\"metadata\":{\"field\":\"bio\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}}")
 
           echo "Log profile update HTTP $HTTP_CODE"
@@ -205,25 +192,21 @@ jobs:
 
           echo "Setting theme=$THEME language=$LANG"
           curl -s -o /dev/null -X POST \
-            "${SUPA_URL}/rest/v1/settings" \
+            "${SUPA_URL}/rest/v1/ka_settings" \
             -H "apikey: ${SUPA_KEY}" \
             -H "Authorization: Bearer ${SUPA_KEY}" \
             -H "Content-Type: application/json" \
             -H "Prefer: resolution=merge-duplicates" \
-            -H "Accept-Profile: ${SCHEMA}" \
-            -H "Content-Profile: ${SCHEMA}" \
             -d "{\"user_id\":\"$USER_ID\",\"key\":\"theme\",\"value\":\"$THEME\",\"updated_at\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
 
           sleep $((RANDOM % 10 + 3))
 
           curl -s -o /dev/null -X POST \
-            "${SUPA_URL}/rest/v1/settings" \
+            "${SUPA_URL}/rest/v1/ka_settings" \
             -H "apikey: ${SUPA_KEY}" \
             -H "Authorization: Bearer ${SUPA_KEY}" \
             -H "Content-Type: application/json" \
             -H "Prefer: resolution=merge-duplicates" \
-            -H "Accept-Profile: ${SCHEMA}" \
-            -H "Content-Profile: ${SCHEMA}" \
             -d "{\"user_id\":\"$USER_ID\",\"key\":\"language\",\"value\":\"$LANG\",\"updated_at\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
 
           echo "Settings updated"
@@ -236,11 +219,9 @@ jobs:
           if [ -n "$SESSION_ID" ]; then
             echo "Deleting session $SESSION_ID..."
             curl -s -o /dev/null -X DELETE \
-              "${SUPA_URL}/rest/v1/sessions?id=eq.${SESSION_ID}" \
+              "${SUPA_URL}/rest/v1/ka_sessions?id=eq.${SESSION_ID}" \
               -H "apikey: ${SUPA_KEY}" \
-              -H "Authorization: Bearer ${SUPA_KEY}" \
-              -H "Accept-Profile: ${SCHEMA}" \
-              -H "Content-Profile: ${SCHEMA}"
+              -H "Authorization: Bearer ${SUPA_KEY}"
             echo "Session deleted"
           else
             echo "No session ID, skipping logout"
@@ -252,11 +233,9 @@ jobs:
         run: |
           echo "Purging expired sessions..."
           curl -s -o /dev/null -X DELETE \
-            "${SUPA_URL}/rest/v1/sessions?expires_at=lt.$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            "${SUPA_URL}/rest/v1/ka_sessions?expires_at=lt.$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             -H "apikey: ${SUPA_KEY}" \
-            -H "Authorization: Bearer ${SUPA_KEY}" \
-            -H "Accept-Profile: ${SCHEMA}" \
-            -H "Content-Profile: ${SCHEMA}"
+            -H "Authorization: Bearer ${SUPA_KEY}"
           echo "Expired sessions purged"
 
       # ── STEP 10: Trim old activity logs ────────────────────────────────
@@ -265,11 +244,9 @@ jobs:
           CUTOFF=$(date -u -d '30 days ago' +%Y-%m-%dT%H:%M:%SZ)
           echo "Trimming logs older than $CUTOFF..."
           curl -s -o /dev/null -X DELETE \
-            "${SUPA_URL}/rest/v1/activity_log?created_at=lt.${CUTOFF}" \
+            "${SUPA_URL}/rest/v1/ka_activity_log?created_at=lt.${CUTOFF}" \
             -H "apikey: ${SUPA_KEY}" \
-            -H "Authorization: Bearer ${SUPA_KEY}" \
-            -H "Accept-Profile: ${SCHEMA}" \
-            -H "Content-Profile: ${SCHEMA}"
+            -H "Authorization: Bearer ${SUPA_KEY}"
           echo "Old logs trimmed"
 
       # ── STEP 11: Final health check ─────────────────────────────────────
@@ -277,10 +254,9 @@ jobs:
         run: |
           echo "Running final health check..."
           HTTP_CODE=$(curl -s -o /tmp/health.json -w "%{http_code}" \
-            "${SUPA_URL}/rest/v1/users?select=id,updated_at&limit=1" \
+            "${SUPA_URL}/rest/v1/ka_users?select=id,updated_at&limit=1" \
             -H "apikey: ${SUPA_KEY}" \
-            -H "Authorization: Bearer ${SUPA_KEY}" \
-            -H "Accept-Profile: ${SCHEMA}")
+            -H "Authorization: Bearer ${SUPA_KEY}")
 
           BODY=$(cat /tmp/health.json)
           echo "HTTP $HTTP_CODE — $BODY"
